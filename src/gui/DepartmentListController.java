@@ -1,18 +1,27 @@
 package gui;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import application.Main;
+import gui.util.Alerts;
+import gui.util.Utils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.entity.Department;
 import model.service.DepartmentService;
@@ -31,8 +40,9 @@ public class DepartmentListController implements Initializable {
 	private DepartmentService service;
 	private ObservableList<Department> obsListDep;
 	@FXML
-	private void onBtnNovoAction() {
-		System.out.println("Novo");
+	private void onBtnNovoAction(ActionEvent event) {
+		Stage stage = Utils.currentStage(event);
+		createDialogForm("/gui/DepartmentForm.fxml", stage);
 	}
 	
 	public void setService(DepartmentService service) {
@@ -48,6 +58,24 @@ public class DepartmentListController implements Initializable {
 			List<Department> listDep = service.findAll();
 			obsListDep = FXCollections.observableArrayList(listDep);
 			tableViewDepartment.setItems(obsListDep);
+		}
+	}
+	
+	public void createDialogForm(String path, Stage parenteStage) {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
+			Pane pane = loader.load();
+			
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Digite os dados do departamento");
+			dialogStage.setScene(new Scene(pane));
+			dialogStage.setResizable(false);
+			dialogStage.initOwner(parenteStage);
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.showAndWait();
+		}
+		catch(IOException e) {
+			Alerts.showAlert("Erro", "Erro ao abrir o formulário de cadastro", e.getMessage(), AlertType.ERROR);
 		}
 	}
 	
