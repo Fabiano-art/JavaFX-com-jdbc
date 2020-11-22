@@ -53,7 +53,6 @@ public class DepartmentListController implements Initializable {
 	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-		System.out.println("initialize DepartmentListController");
 		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
 		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
 		
@@ -61,7 +60,6 @@ public class DepartmentListController implements Initializable {
 		double maxHeight = stage.getMaxHeight();
 		
 		tableViewDepartment.prefHeightProperty().bind(stage.heightProperty());
-		updateTableView();
 	}
 
 }
