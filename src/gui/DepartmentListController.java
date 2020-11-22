@@ -57,7 +57,6 @@ public class DepartmentListController implements Initializable {
 		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
 		
 		Stage stage = (Stage) Main.getMainScene().getWindow();
-		double maxHeight = stage.getMaxHeight();
 		
 		tableViewDepartment.prefHeightProperty().bind(stage.heightProperty());
 	}
