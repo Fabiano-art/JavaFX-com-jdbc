@@ -3,13 +3,19 @@ package gui;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import db.DbException;
+import gui.util.Alerts;
 import gui.util.Constraints;
+import gui.util.Utils;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entity.Department;
+import model.service.DepartmentService;
 
 public class DepartmentFormController implements Initializable{
 	
@@ -25,15 +31,41 @@ public class DepartmentFormController implements Initializable{
 	private Button btnCancel;
 	
 	private Department dep;
+	private DepartmentService depService;
 	
 	@FXML
-	public void onBtnSaveAction() {
-		
+	public void onBtnSaveAction(ActionEvent event) {
+		if(dep == null) {
+			throw new IllegalStateException("Department is null");
+		}
+		if(depService == null) {
+			throw new IllegalStateException("Service is null");
+		}
+		try {
+			dep = getFormData();
+			depService.saveOrUpdate(dep);
+			Utils.currentStage(event).close();
+		}
+		catch(DbException e) {
+			Alerts.showAlert("Erro ao salvar", null, e.getMessage(), AlertType.ERROR);
+		}
 	}
 	
-	@FXML
-	public void onBtnCancelAction() {
+	private Department getFormData() {
+		Department dep = new Department();
+		dep.setId(Utils.tryParseToInt(txtId.getText()));
+		dep.setName(txtName.getText());
 		
+		return dep;
+	}
+
+	@FXML
+	public void onBtnCancelAction(ActionEvent event) {
+		Utils.currentStage(event).close();
+	}
+	
+	public void setDepartmentService(DepartmentService depService) {
+		this.depService = depService;
 	}
 	
 	public void setDepartment(Department department) {

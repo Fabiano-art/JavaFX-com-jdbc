@@ -62,20 +62,21 @@ public class DepartmentListController implements Initializable {
 		}
 	}
 	
-	public void createDialogForm(Department dep, String path, Stage parenteStage) {
+	public void createDialogForm(Department dep, String path, Stage parentStage) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
 			Pane pane = loader.load();
 			
 			DepartmentFormController depFormController = loader.getController();
 			depFormController.setDepartment(dep);
+			depFormController.setDepartmentService(new DepartmentService());
 			depFormController.updateFormData();
 			
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Digite os dados do departamento");
 			dialogStage.setScene(new Scene(pane));
 			dialogStage.setResizable(false);
-			dialogStage.initOwner(parenteStage);
+			dialogStage.initOwner(parentStage);
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.showAndWait();
 		}
