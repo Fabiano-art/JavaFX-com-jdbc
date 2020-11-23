@@ -18,6 +18,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entity.Department;
+import model.exceptions.ValidationException;
 import model.service.DepartmentService;
 
 public class DepartmentFormController implements Initializable{
@@ -46,6 +47,7 @@ public class DepartmentFormController implements Initializable{
 			throw new IllegalStateException("Service is null");
 		}
 		try {
+			
 			dep = getFormData();
 			depService.saveOrUpdate(dep);
 			notifyDataChangeListeners();
@@ -53,6 +55,9 @@ public class DepartmentFormController implements Initializable{
 		}
 		catch(DbException e) {
 			Alerts.showAlert("Erro ao salvar", null, e.getMessage(), AlertType.ERROR);
+		}
+		catch(ValidationException e) {
+			lblError.setText(e.getMessage());
 		}
 	}
 	
@@ -66,10 +71,15 @@ public class DepartmentFormController implements Initializable{
 		}
 	}
 	
-	private Department getFormData() {
+	private Department getFormData() throws ValidationException{
 		Department dep = new Department();
+		
 		dep.setId(Utils.tryParseToInt(txtId.getText()));
 		dep.setName(txtName.getText());
+		
+		if(txtName.getText() == null || txtName.getText().trim().equals("")) {
+			throw new ValidationException("Campo nome não pode estar vazio");
+		}
 		
 		return dep;
 	}
