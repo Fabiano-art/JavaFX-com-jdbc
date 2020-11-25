@@ -49,7 +49,7 @@ public class MainViewController implements Initializable {
 		loadView("/gui/about.fxml", x -> {});
 	}
 
-	private <T> void loadView(String path, Consumer<T> initializer) {
+	private <type> void loadView(String path, Consumer<type> initializer) {
 
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
@@ -63,7 +63,7 @@ public class MainViewController implements Initializable {
 			mainVBox.getChildren().add(mainMenuBar);
 			mainVBox.getChildren().addAll(newVBox.getChildren());
 			
-			T controller = loader.getController();
+			type controller = loader.getController();
 			initializer.accept(controller);
 		} catch (IOException e) {
 			Alerts.showAlert("Erro", "Erro ao carregar a tela", e.getMessage(), AlertType.ERROR);
@@ -72,7 +72,7 @@ public class MainViewController implements Initializable {
 
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-
+		
 	}
 
 }

@@ -26,7 +26,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import model.entity.Department;
 import model.entity.Seller;
 import model.service.SellerService;
 
@@ -40,6 +39,12 @@ public class SellerListController implements Initializable, DataChangeListener {
 	private TableColumn<Seller, Integer> tableColumnId;
 	@FXML
 	private TableColumn<Seller, String> tableColumnName;
+	@FXML
+	private TableColumn<Seller, String> tableColumnEmail;
+	@FXML
+	private TableColumn<Seller, Date> tableColumnBirthDate;
+	@FXML
+	private TableColumn<Seller, Double> tableColumnBaseSalary;
 	@FXML
 	private TableColumn<Seller, Seller> tableColumnEDIT;
 	@FXML
@@ -141,7 +146,7 @@ public class SellerListController implements Initializable, DataChangeListener {
 	protected void removeEntity(Seller obj) {
 
 		Optional<ButtonType> result = Alerts.showConfirmation("Confirmação",
-				"Deseja remove o departamente " + obj.getName() + "?");
+				"Deseja remover o vendedor " + obj.getName() + "?");
 
 		if (result.get() == ButtonType.OK) {
 			if (service == null) {
@@ -161,7 +166,12 @@ public class SellerListController implements Initializable, DataChangeListener {
 	public void initialize(URL url, ResourceBundle rb) {
 		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
 		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
-
+		tableColumnEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+		tableColumnBirthDate.setCellValueFactory(new PropertyValueFactory<>("birthDate"));
+		Utils.formatTableColumnDate(tableColumnBirthDate, "dd/MM/yyyy");
+		tableColumnBaseSalary.setCellValueFactory(new PropertyValueFactory<>("baseSalary"));
+		Utils.formatTableColumnDouble(tableColumnBaseSalary, 2);
+		
 		Stage stage = (Stage) Main.getMainScene().getWindow();
 
 		tableViewSeller.prefHeightProperty().bind(stage.heightProperty());

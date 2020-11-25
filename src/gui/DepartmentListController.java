@@ -120,27 +120,30 @@ public class DepartmentListController implements Initializable, DataChangeListen
 			}
 		});
 	}
-	
-	private void initRemoveButtons() { 
-		tableColumnREMOVE.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue())); 
-		tableColumnREMOVE.setCellFactory(param -> new TableCell<Department, Department>() { 
-			private final Button button = new Button("remove"); 
-			@Override protected void updateItem(Department obj, boolean empty) { 
-				super.updateItem(obj, empty); 
-				if (obj == null) {                 
-					setGraphic(null); 
-					return;             
-				}             
-				setGraphic(button); 
-				button.setOnAction(event -> removeEntity(obj));         
-				}     
-			}); 
+
+	private void initRemoveButtons() {
+		tableColumnREMOVE.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+		tableColumnREMOVE.setCellFactory(param -> new TableCell<Department, Department>() {
+			private final Button button = new Button("remove");
+
+			@Override
+			protected void updateItem(Department obj, boolean empty) {
+				super.updateItem(obj, empty);
+				if (obj == null) {
+					setGraphic(null);
+					return;
+				}
+				setGraphic(button);
+				button.setOnAction(event -> removeEntity(obj));
+			}
+		});
 	}
 
 	protected void removeEntity(Department obj) {
-		
-		Optional<ButtonType> result = Alerts.showConfirmation("Confirmação", "Deseja remove o departamente "+obj.getName()+"?");
-		
+
+		Optional<ButtonType> result = Alerts.showConfirmation("Confirmação",
+				"Deseja remove o departamente " + obj.getName() + "?");
+
 		if (result.get() == ButtonType.OK) {
 			if (service == null) {
 				throw new IllegalStateException("Service está vazia");
@@ -148,12 +151,11 @@ public class DepartmentListController implements Initializable, DataChangeListen
 			try {
 				service.remove(obj);
 				updateTableView();
-			}
-			catch(SQLIntegrityConstraintViolationException e) {
+			} catch (SQLIntegrityConstraintViolationException e) {
 				Alerts.showAlert("Erro", null, e.getMessage(), AlertType.ERROR);
 			}
 		}
-		
+
 	}
 
 	@Override
