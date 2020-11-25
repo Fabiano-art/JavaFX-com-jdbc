@@ -1,6 +1,6 @@
 package db;
 
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,80 +10,61 @@ import java.sql.Statement;
 import java.util.Properties;
 
 public class DB {
+
+	private static Connection conn = null;
 	
-	private static Connection con = null;
-	
-	public static Connection getConnection(){
-		if(con == null) {
+	public static Connection getConnection() {
+		if (conn == null) {
 			try {
 				Properties props = loadProperties();
 				String url = props.getProperty("dburl");
-				con = DriverManager.getConnection(url, props);
+				conn = DriverManager.getConnection(url, props);
 			}
 			catch (SQLException e) {
 				throw new DbException(e.getMessage());
 			}
 		}
-		return con;
+		return conn;
 	}
 	
 	public static void closeConnection() {
-		if (con != null) {
+		if (conn != null) {
 			try {
-				con.close();
-			}
-			catch(SQLException e) {
+				conn.close();
+			} catch (SQLException e) {
 				throw new DbException(e.getMessage());
 			}
 		}
 	}
 	
 	private static Properties loadProperties() {
-		try (FileReader fs = new FileReader("db.properties")){
+		try (FileInputStream fs = new FileInputStream("db.properties")) {
 			Properties props = new Properties();
 			props.load(fs);
 			return props;
 		}
-		catch(IOException e) {
+		catch (IOException e) {
 			throw new DbException(e.getMessage());
 		}
 	}
 	
-	public static void closeOperations(Statement st, ResultSet rs) throws DbException {
-		try {
-			if(st != null && rs != null) {
+	public static void closeStatement(Statement st) {
+		if (st != null) {
+			try {
 				st.close();
-				rs.close();
+			} catch (SQLException e) {
+				throw new DbException(e.getMessage());
 			}
-			else if (st != null) {
-				st.close();
-			}
-			else if (rs != null) {
-				rs.close();
-			}
-		}
-		catch (SQLException e) {
-			throw new DbException(e.getMessage());
-		}
-		
-	}
-	
-	public static void closeOperation(Statement st) throws DbException{
-		try {
-			if(st != null) st.close();
-		}
-		catch(SQLException e) {
-			throw new DbException(e.getMessage());
-		}
-	}
-	
-	public static void closeOperation(ResultSet rs) throws DbException{
-		try {
-			if(rs != null) rs.close();
-		}
-		catch(SQLException e) {
-			throw new DbException(e.getMessage());
 		}
 	}
 
+	public static void closeResultSet(ResultSet rs) {
+		if (rs != null) {
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				throw new DbException(e.getMessage());
+			}
+		}
+	}
 }

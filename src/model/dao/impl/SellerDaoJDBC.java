@@ -146,7 +146,8 @@ public class SellerDaoJDBC implements SellerDao {
 		} catch (SQLException e) {
 			throw new DbException(e.getMessage());
 		} finally {
-			DB.closeOperations(ps, rs);
+			DB.closeResultSet(rs);
+			DB.closeStatement(ps);
 		}
 
 		return null;
@@ -159,18 +160,19 @@ public class SellerDaoJDBC implements SellerDao {
 		ResultSet rs = null;
 
 		try {
-			String sql = "select seller.*, department.Id, department.name as depName "
-					+ "from seller join department on seller.DepartmentId = department.Id";
+			String sql = "SELECT seller.*, department.Id, department.name as depName FROM seller\r\n" + 
+					"join department on seller.DepartmentId = department.id";
 			ps = con.prepareStatement(sql);
 
 			rs = ps.executeQuery();
-
-			List<Seller> list = new ArrayList<>();
-			Department dep = new Department();
+			
+			List<Seller> list = new ArrayList<Seller>();
+			
 
 			while (rs.next()) {
 				Seller sel = new Seller();
-
+				Department dep = new Department();
+				
 				sel.setId(rs.getInt("Id"));
 				sel.setName(rs.getString("Name"));
 				sel.setEmail(rs.getString("Email"));
@@ -184,6 +186,7 @@ public class SellerDaoJDBC implements SellerDao {
 				list.add(sel);
 			}
 			return list;
+			
 		} catch (SQLException e) {
 			throw new DbException(e.getMessage());
 		}
@@ -232,7 +235,8 @@ public class SellerDaoJDBC implements SellerDao {
 		} catch (SQLException e) {
 			throw new DbException(e.getMessage());
 		} finally {
-			DB.closeOperations(ps, rs);
+			DB.closeResultSet(rs);
+			DB.closeStatement(ps);
 		}
 
 	}

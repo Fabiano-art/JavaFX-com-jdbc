@@ -2,12 +2,12 @@ package gui;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 import application.Main;
-import db.DbException;
 import gui.listener.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Utils;
@@ -149,8 +149,8 @@ public class DepartmentListController implements Initializable, DataChangeListen
 				service.remove(obj);
 				updateTableView();
 			}
-			catch(DbException e) {
-				Alerts.showAlert("Erro ao remover", "Erro", e.getMessage(), AlertType.ERROR);
+			catch(SQLIntegrityConstraintViolationException e) {
+				Alerts.showAlert("Erro", null, e.getMessage(), AlertType.ERROR);
 			}
 		}
 		

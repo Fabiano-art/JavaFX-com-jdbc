@@ -1,5 +1,6 @@
 package model.service;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 import model.dao.DaoFactory;
@@ -23,7 +24,7 @@ public class DepartmentService {
 		}
 	}
 	
-	public void remove(Department dep) {
+	public void remove(Department dep) throws SQLIntegrityConstraintViolationException{
 		depDao.deleteById(dep.getId());
 	}
 }

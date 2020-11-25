@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +57,7 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 	}
 
 	@Override
-	public void deleteById(Integer id) {
+	public void deleteById(Integer id) throws SQLIntegrityConstraintViolationException {
 		
 		try {
 			String sql = "DELETE FROM department where Id = ?";
@@ -67,7 +68,7 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 			ps.executeUpdate();
 		}
 		catch (SQLException e) {
-			throw new DbException(e.getMessage());
+			throw new SQLIntegrityConstraintViolationException("Este departamento está associado a um vendedor");
 		}
 		
 	}
