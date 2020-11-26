@@ -12,20 +12,28 @@ import gui.listener.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Constraints;
 import gui.util.Utils;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.util.Callback;
+import model.entity.Department;
 import model.entity.Seller;
 import model.exceptions.ValidationException;
+import model.service.DepartmentService;
 import model.service.SellerService;
 
-public class SellerFormController implements Initializable{
-	
+public class SellerFormController implements Initializable {
+
 	@FXML
 	private TextField txtId;
 	@FXML
@@ -48,54 +56,56 @@ public class SellerFormController implements Initializable{
 	private Button btnSave;
 	@FXML
 	private Button btnCancel;
-	
+	@FXML
+	private ComboBox<Department> cmbDepartment;
+
+	private ObservableList<Department> obsDep;
 	private List<DataChangeListener> dataChangeList = new ArrayList<DataChangeListener>();
 	private Seller dep;
-	private SellerService depService;
-	
+	private SellerService selService;
+	private DepartmentService depService;
+
 	@FXML
 	public void onBtnSaveAction(ActionEvent event) {
-		if(dep == null) {
+		if (dep == null) {
 			throw new IllegalStateException("Seller is null");
 		}
-		if(depService == null) {
+		if (depService == null) {
 			throw new IllegalStateException("Service is null");
 		}
 		try {
-			
+
 			dep = getFormData();
-			depService.saveOrUpdate(dep);
+			selService.saveOrUpdate(dep);
 			notifyDataChangeListeners();
 			Utils.currentStage(event).close();
-		}
-		catch(DbException e) {
+		} catch (DbException e) {
 			Alerts.showAlert("Erro ao salvar", null, e.getMessage(), AlertType.ERROR);
-		}
-		catch(ValidationException e) {
+		} catch (ValidationException e) {
 			lblErrorName.setText(e.getMessage());
 		}
 	}
-	
+
 	public void subscribeDataChangeListener(DataChangeListener listener) {
 		dataChangeList.add(listener);
 	}
-	
+
 	public void notifyDataChangeListeners() {
 		for (DataChangeListener listener : dataChangeList) {
 			listener.onDataChanged();
 		}
 	}
-	
-	private Seller getFormData() throws ValidationException{
+
+	private Seller getFormData() throws ValidationException {
 		Seller dep = new Seller();
-		
+
 		dep.setId(Utils.tryParseToInt(txtId.getText()));
 		dep.setName(txtName.getText());
-		
-		if(txtName.getText() == null || txtName.getText().trim().equals("")) {
+
+		if (txtName.getText() == null || txtName.getText().trim().equals("")) {
 			throw new ValidationException("Campo nome não pode estar vazio");
 		}
-		
+
 		return dep;
 	}
 
@@ -103,35 +113,67 @@ public class SellerFormController implements Initializable{
 	public void onBtnCancelAction(ActionEvent event) {
 		Utils.currentStage(event).close();
 	}
-	
-	public void setSellerService(SellerService depService) {
+
+	public void setSellerService(SellerService selService) {
+		this.selService = selService;
+	}
+
+	public void setDepartmentService(DepartmentService depService) {
 		this.depService = depService;
 	}
-	
+
 	public void setSeller(Seller department) {
 		this.dep = department;
 	}
 
 	public void updateFormData() {
-		if(dep == null) {
+		if (dep == null) {
 			throw new IllegalStateException("the object is null");
 		}
 		txtId.setText(String.valueOf(dep.getId()));
 		txtName.setText(dep.getName());
 		txtEmail.setText(dep.getEmail());
 		txtBaseSalary.setText(String.format("%.2f", dep.getBaseSalary()));
-		if(dep.getBirthDate() != null) {
+		if (dep.getBirthDate() != null) {
 			dtpBirthDate.setValue(LocalDate.ofInstant(dep.getBirthDate().toInstant(), ZoneId.systemDefault()));
 		}
+		if(dep.getDepartment() == null) {
+			cmbDepartment.getSelectionModel().selectFirst();
+		}
+		else {
+			cmbDepartment.setValue(dep.getDepartment());
+		}
 	}
-	
+
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		Constraints.setTextFieldInteger(txtId);
 		Constraints.setTextFieldMaxLenght(txtName, 80);
 		Constraints.setTextFieldDouble(txtBaseSalary);
 		Utils.formatDatePicker(dtpBirthDate, "dd/MM/yyyy");
+		
+		initializeComboBoxDepartment();
 	}
-	
-	
+
+	private void initializeComboBoxDepartment() {
+		Callback<ListView<Department>, ListCell<Department>> factory = lv -> new ListCell<Department>() {
+			@Override
+			protected void updateItem(Department item, boolean empty) {
+				super.updateItem(item, empty);
+				setText(empty ? "" : item.getName());
+			}
+		};
+		cmbDepartment.setCellFactory(factory);
+		cmbDepartment.setButtonCell(factory.call(null));
+	}
+
+	public void initializeComboBox() {
+		if (depService == null) {
+			throw new IllegalStateException("depService is null");
+		}
+		List<Department> list = depService.findAll();
+		obsDep = FXCollections.observableArrayList(list);
+		cmbDepartment.setItems(obsDep);
+	}
+
 }
