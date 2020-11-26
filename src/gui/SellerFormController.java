@@ -1,6 +1,8 @@
 package gui;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -15,6 +17,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entity.Seller;
@@ -28,7 +31,19 @@ public class SellerFormController implements Initializable{
 	@FXML
 	private TextField txtName;
 	@FXML
-	private Label lblError;
+	private TextField txtEmail;
+	@FXML
+	private DatePicker dtpBirthDate;
+	@FXML
+	private TextField txtBaseSalary;
+	@FXML
+	private Label lblErrorName;
+	@FXML
+	private Label lblErrorEmail;
+	@FXML
+	private Label lblErrorBirthDate;
+	@FXML
+	private Label lblErrorBaseSalary;
 	@FXML
 	private Button btnSave;
 	@FXML
@@ -57,7 +72,7 @@ public class SellerFormController implements Initializable{
 			Alerts.showAlert("Erro ao salvar", null, e.getMessage(), AlertType.ERROR);
 		}
 		catch(ValidationException e) {
-			lblError.setText(e.getMessage());
+			lblErrorName.setText(e.getMessage());
 		}
 	}
 	
@@ -103,12 +118,19 @@ public class SellerFormController implements Initializable{
 		}
 		txtId.setText(String.valueOf(dep.getId()));
 		txtName.setText(dep.getName());
+		txtEmail.setText(dep.getEmail());
+		txtBaseSalary.setText(String.format("%.2f", dep.getBaseSalary()));
+		if(dep.getBirthDate() != null) {
+			dtpBirthDate.setValue(LocalDate.ofInstant(dep.getBirthDate().toInstant(), ZoneId.systemDefault()));
+		}
 	}
 	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		Constraints.setTextFieldInteger(txtId);
-		Constraints.setTextFieldMaxLenght(txtName, 40);
+		Constraints.setTextFieldMaxLenght(txtName, 80);
+		Constraints.setTextFieldDouble(txtBaseSalary);
+		Utils.formatDatePicker(dtpBirthDate, "dd/MM/yyyy");
 	}
 	
 	
