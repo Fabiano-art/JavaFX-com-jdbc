@@ -31,6 +31,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.entity.Department;
 import model.entity.Seller;
 import model.service.DepartmentService;
 import model.service.SellerService;
@@ -51,6 +52,8 @@ public class SellerListController implements Initializable, DataChangeListener {
 	private TableColumn<Seller, Date> tableColumnBirthDate;
 	@FXML
 	private TableColumn<Seller, Double> tableColumnBaseSalary;
+	@FXML
+	private TableColumn<Seller, Department> tableColumnDepart;
 	@FXML
 	private TableColumn<Seller, Seller> tableColumnEDIT;
 	@FXML
@@ -75,7 +78,6 @@ public class SellerListController implements Initializable, DataChangeListener {
 			throw new IllegalStateException("Service is null");
 
 		} else {
-			//List<Seller> listDep = service.findAll();
 			List<Seller> listDep = new ArrayList<Seller>();
 			listDep = service.findAll();
 			obsListDep = FXCollections.observableArrayList(listDep);
@@ -179,6 +181,7 @@ public class SellerListController implements Initializable, DataChangeListener {
 		Utils.formatTableColumnDate(tableColumnBirthDate, "dd/MM/yyyy");
 		tableColumnBaseSalary.setCellValueFactory(new PropertyValueFactory<>("baseSalary"));
 		Utils.formatTableColumnDouble(tableColumnBaseSalary, 2);
+		tableColumnDepart.setCellValueFactory(new PropertyValueFactory("department"));
 		
 		Stage stage = (Stage) Main.getMainScene().getWindow();
 
