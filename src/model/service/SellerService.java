@@ -15,12 +15,12 @@ public class SellerService {
 		return depDao.findAll();
 	}
 	
-	public void saveOrUpdate(Seller dep) {
-		if(dep.getId() == null) {
-			depDao.insert(dep);
+	public void saveOrUpdate(Seller sel) {
+		if(sel.getId() == null) {
+			depDao.insert(sel);
 		}
 		else {
-			depDao.update(dep);
+			depDao.update(sel);
 		}
 	}
 	

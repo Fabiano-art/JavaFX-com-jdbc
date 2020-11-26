@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,7 +38,12 @@ public class SellerDaoJDBC implements SellerDao {
 
 			ps.setString(1, seller.getName());
 			ps.setString(2, seller.getEmail());
-			ps.setDate(3, (java.sql.Date) new Date(seller.getBirthDate().getTime()));
+			
+			java.util.Date dataUtil = seller.getBirthDate();
+			java.sql.Date dataSql = new java.sql.Date(dataUtil.getTime());
+			
+			ps.setDate(3, dataSql);
+			
 			ps.setDouble(4, seller.getBaseSalary());
 			ps.setInt(5, seller.getDepartment().getId());
 
@@ -84,7 +90,12 @@ public class SellerDaoJDBC implements SellerDao {
 
 			ps.setString(1, seller.getName());
 			ps.setString(2, seller.getEmail());
-			ps.setDate(3, (java.sql.Date) new Date(seller.getBirthDate().getTime()));
+			
+			java.util.Date dataUtil = seller.getBirthDate();
+			java.sql.Date dataSql = new java.sql.Date(dataUtil.getTime());
+			
+			ps.setDate(3, dataSql);
+			
 			ps.setDouble(4, seller.getBaseSalary());
 			ps.setInt(5, seller.getDepartment().getId());
 			ps.setInt(6, seller.getId());

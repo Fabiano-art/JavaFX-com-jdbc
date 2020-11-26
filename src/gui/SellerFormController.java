@@ -1,9 +1,11 @@
 package gui;
 
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -61,22 +63,21 @@ public class SellerFormController implements Initializable {
 
 	private ObservableList<Department> obsDep;
 	private List<DataChangeListener> dataChangeList = new ArrayList<DataChangeListener>();
-	private Seller dep;
+	private Seller sel;
 	private SellerService selService;
 	private DepartmentService depService;
 
 	@FXML
 	public void onBtnSaveAction(ActionEvent event) {
-		if (dep == null) {
+		if (sel == null) {
 			throw new IllegalStateException("Seller is null");
 		}
-		if (depService == null) {
+		if (selService == null) {
 			throw new IllegalStateException("Service is null");
 		}
 		try {
-
-			dep = getFormData();
-			selService.saveOrUpdate(dep);
+			sel = getFormData();
+			selService.saveOrUpdate(sel);
 			notifyDataChangeListeners();
 			Utils.currentStage(event).close();
 		} catch (DbException e) {
@@ -97,16 +98,23 @@ public class SellerFormController implements Initializable {
 	}
 
 	private Seller getFormData() throws ValidationException {
-		Seller dep = new Seller();
-
-		dep.setId(Utils.tryParseToInt(txtId.getText()));
-		dep.setName(txtName.getText());
-
+		Seller sel = new Seller();
+		
 		if (txtName.getText() == null || txtName.getText().trim().equals("")) {
 			throw new ValidationException("Campo nome não pode estar vazio");
 		}
+		
+		sel.setId(Utils.tryParseToInt(txtId.getText()));
+		sel.setName(txtName.getText());
+		sel.setEmail(txtEmail.getText());
+		sel.setBaseSalary(Double.parseDouble(txtBaseSalary.getText()));
+		
+		Instant ins = Instant.from(dtpBirthDate.getValue().atStartOfDay(ZoneId.systemDefault()));
+		sel.setBirthDate(Date.from(ins));
+		
+		sel.setDepartment(cmbDepartment.getValue());
 
-		return dep;
+		return sel;
 	}
 
 	@FXML
@@ -122,26 +130,26 @@ public class SellerFormController implements Initializable {
 		this.depService = depService;
 	}
 
-	public void setSeller(Seller department) {
-		this.dep = department;
+	public void setSeller(Seller selartment) {
+		this.sel = selartment;
 	}
 
 	public void updateFormData() {
-		if (dep == null) {
+		if (sel == null) {
 			throw new IllegalStateException("the object is null");
 		}
-		txtId.setText(String.valueOf(dep.getId()));
-		txtName.setText(dep.getName());
-		txtEmail.setText(dep.getEmail());
-		txtBaseSalary.setText(String.format("%.2f", dep.getBaseSalary()));
-		if (dep.getBirthDate() != null) {
-			dtpBirthDate.setValue(LocalDate.ofInstant(dep.getBirthDate().toInstant(), ZoneId.systemDefault()));
+		txtId.setText(String.valueOf(sel.getId()));
+		txtName.setText(sel.getName());
+		txtEmail.setText(sel.getEmail());
+		txtBaseSalary.setText(String.format("%.2f", sel.getBaseSalary()));
+		if (sel.getBirthDate() != null) {
+			dtpBirthDate.setValue(LocalDate.ofInstant(sel.getBirthDate().toInstant(), ZoneId.systemDefault()));
 		}
-		if(dep.getDepartment() == null) {
+		if(sel.getDepartment() == null) {
 			cmbDepartment.getSelectionModel().selectFirst();
 		}
 		else {
-			cmbDepartment.setValue(dep.getDepartment());
+			cmbDepartment.setValue(sel.getDepartment());
 		}
 	}
 
@@ -168,8 +176,8 @@ public class SellerFormController implements Initializable {
 	}
 
 	public void initializeComboBox() {
-		if (depService == null) {
-			throw new IllegalStateException("depService is null");
+		if (selService == null) {
+			throw new IllegalStateException("selService is null");
 		}
 		List<Department> list = depService.findAll();
 		obsDep = FXCollections.observableArrayList(list);
